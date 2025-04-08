@@ -44,7 +44,7 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "candidate" as UserRole,
+      role: "candidate", // Fixed: Changed from UserRole to a string literal that matches the schema
     },
   });
 
@@ -52,7 +52,7 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      await register(data.email, data.password, data.name, data.role);
+      await register(data.email, data.password, data.name, data.role as UserRole);
     } catch (error) {
       console.error("Registration error:", error);
     } finally {
