@@ -77,7 +77,11 @@ const SubjectList = ({ courseId, courses }: SubjectListProps) => {
               onSubmit={handleCreateSubject}
               isSubmitting={isLoading}
               courseIdFixed={true}
-              initialData={{ courseId }}
+              initialData={{ 
+                title: "", 
+                description: "", 
+                courseId 
+              }}
             />
           </DialogContent>
         </Dialog>
