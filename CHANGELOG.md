@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Exam taking interface for candidates
+- Timer functionality for exams
+- Answer saving and navigation
+- Result calculation and display
+- Question pools and randomization
+- Advanced exam configuration options
+
+### Changed
+- Refactored QuestionForm component for better maintainability
+- Updated exam form to support question pools
+- Improved router configuration with exam-taking routes
+
+## [0.4.0] - 2025-04-08
+
+### Added
 - Question bank system with multiple question types (MCQ, True/False, Multiple Answer)
 - Question difficulty levels and categorization by subject
 - Question search and filtering capabilities

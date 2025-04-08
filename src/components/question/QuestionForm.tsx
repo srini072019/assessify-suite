@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { X, PlusCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Subject } from "@/types/subject.types";
+import QuestionOptions from "./QuestionOptions";
+import QuestionTypeSelector from "./QuestionTypeSelector";
 
 const questionSchema = z.object({
   text: z.string().min(5, "Question text must be at least 5 characters"),
@@ -101,15 +101,8 @@ const QuestionForm = ({
   const handleCorrectOption = (index: number, checked: boolean) => {
     const currentOptions = form.getValues("options");
     
-    if (questionType === QuestionType.MULTIPLE_CHOICE) {
-      // For multiple choice, only one option can be correct
-      const updatedOptions = currentOptions.map((option, i) => ({
-        ...option,
-        isCorrect: i === index ? checked : false,
-      }));
-      form.setValue("options", updatedOptions);
-    } else if (questionType === QuestionType.TRUE_FALSE) {
-      // For true/false, only one option can be correct
+    if (questionType === QuestionType.MULTIPLE_CHOICE || questionType === QuestionType.TRUE_FALSE) {
+      // For multiple choice or true/false, only one option can be correct
       const updatedOptions = currentOptions.map((option, i) => ({
         ...option,
         isCorrect: i === index ? checked : false,
@@ -158,36 +151,9 @@ const QuestionForm = ({
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Question Type</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={(value) => handleQuestionTypeChange(value as QuestionType)}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select question type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={QuestionType.MULTIPLE_CHOICE}>
-                        Multiple Choice
-                      </SelectItem>
-                      <SelectItem value={QuestionType.TRUE_FALSE}>
-                        True/False
-                      </SelectItem>
-                      <SelectItem value={QuestionType.MULTIPLE_ANSWER}>
-                        Multiple Answer
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <QuestionTypeSelector 
+            form={form} 
+            onQuestionTypeChange={handleQuestionTypeChange} 
           />
 
           <FormField
@@ -247,78 +213,13 @@ const QuestionForm = ({
           />
         </div>
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <FormLabel>Options</FormLabel>
-            {questionType !== QuestionType.TRUE_FALSE && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addOption}
-              >
-                <PlusCircle size={16} className="mr-1" /> Add Option
-              </Button>
-            )}
-          </div>
-
-          {form.watch("options").map((option, index) => (
-            <div key={option.id} className="flex items-start space-x-2">
-              <FormField
-                control={form.control}
-                name={`options.${index}.isCorrect`}
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0 mt-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          handleCorrectOption(index, checked as boolean)
-                        }
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name={`options.${index}.text`}
-                render={({ field }) => (
-                  <FormItem className="flex-grow">
-                    <FormControl>
-                      <Input
-                        placeholder="Option text"
-                        {...field}
-                        disabled={
-                          questionType === QuestionType.TRUE_FALSE && index < 2
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {questionType !== QuestionType.TRUE_FALSE && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeOption(index)}
-                  disabled={form.watch("options").length <= 2}
-                >
-                  <X size={16} />
-                </Button>
-              )}
-            </div>
-          ))}
-          {form.formState.errors.options?.message && (
-            <p className="text-sm font-medium text-destructive">
-              {form.formState.errors.options?.message}
-            </p>
-          )}
-        </div>
+        <QuestionOptions 
+          form={form}
+          questionType={questionType}
+          addOption={addOption}
+          removeOption={removeOption}
+          handleCorrectOption={handleCorrectOption}
+        />
 
         <FormField
           control={form.control}

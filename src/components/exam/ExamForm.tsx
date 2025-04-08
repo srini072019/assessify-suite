@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -46,6 +45,7 @@ const examSchema = z.object({
   timeLimit: z.coerce.number().min(5, "Time limit must be at least 5 minutes"),
   passingScore: z.coerce.number().min(1, "Passing score is required").max(100, "Passing score cannot exceed 100%"),
   shuffleQuestions: z.boolean(),
+  useQuestionPool: z.boolean().optional(),
   status: z.nativeEnum(ExamStatus),
   questions: z.array(z.string()).min(1, "At least one question is required"),
   startDate: z.date().optional(),
@@ -61,6 +61,8 @@ interface ExamFormProps {
     timeLimit?: number;
     passingScore?: number;
     shuffleQuestions?: boolean;
+    useQuestionPool?: boolean;
+    questionPool?: QuestionPool;
     status?: ExamStatus;
     questions?: string[];
     startDate?: Date;
@@ -68,6 +70,7 @@ interface ExamFormProps {
   };
   courses: Course[];
   questions: Question[];
+  subjects: Subject[];
   onSubmit: (data: any) => void;
   isSubmitting: boolean;
   courseIdFixed?: boolean;
@@ -77,12 +80,15 @@ const ExamForm = ({
   initialData,
   courses,
   questions,
+  subjects,
   onSubmit,
   isSubmitting,
   courseIdFixed = false,
 }: ExamFormProps) => {
   const [selectedCourseId, setSelectedCourseId] = useState(initialData?.courseId || "");
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
+  const [useQuestionPool, setUseQuestionPool] = useState(initialData?.useQuestionPool || false);
+  const [questionPool, setQuestionPool] = useState<QuestionPool | undefined>(initialData?.questionPool);
   
   const form = useForm({
     resolver: zodResolver(examSchema),
@@ -93,6 +99,7 @@ const ExamForm = ({
       timeLimit: initialData?.timeLimit || 30,
       passingScore: initialData?.passingScore || 70,
       shuffleQuestions: initialData?.shuffleQuestions || false,
+      useQuestionPool: initialData?.useQuestionPool || false,
       status: initialData?.status || ExamStatus.DRAFT,
       questions: initialData?.questions || [],
       startDate: initialData?.startDate,
@@ -119,7 +126,19 @@ const ExamForm = ({
   }, [watchCourseId, courses, questions]);
 
   const handleSubmit = (data: z.infer<typeof examSchema>) => {
-    onSubmit(data);
+    // If using question pool, add it to the submission data
+    if (useQuestionPool && questionPool) {
+      onSubmit({
+        ...data,
+        useQuestionPool,
+        questionPool
+      });
+    } else {
+      onSubmit({
+        ...data,
+        useQuestionPool: false
+      });
+    }
   };
 
   return (
@@ -255,26 +274,52 @@ const ExamForm = ({
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="shuffleQuestions"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-              <div className="space-y-0.5">
-                <FormLabel>Shuffle Questions</FormLabel>
-                <FormDescription>
-                  Randomize the order of questions for each candidate
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="shuffleQuestions"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel>Shuffle Questions</FormLabel>
+                  <FormDescription>
+                    Randomize the order of questions for each candidate
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="useQuestionPool"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel>Use Question Pool</FormLabel>
+                  <FormDescription>
+                    Create a pool of questions and randomly select questions for each candidate
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={useQuestionPool}
+                    onCheckedChange={(checked) => {
+                      setUseQuestionPool(checked);
+                      field.onChange(checked);
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
@@ -371,71 +416,82 @@ const ExamForm = ({
           />
         </div>
 
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="questions"
-            render={() => (
-              <FormItem>
-                <div className="mb-4">
-                  <FormLabel className="text-base">Questions</FormLabel>
-                  <FormDescription>
-                    Select questions to include in this exam
-                  </FormDescription>
-                </div>
-                <div className="space-y-2 max-h-60 overflow-y-auto p-2 border rounded">
-                  {selectedCourseId && filteredQuestions.length > 0 ? (
-                    filteredQuestions.map((question) => (
-                      <FormField
-                        key={question.id}
-                        control={form.control}
-                        name="questions"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={question.id}
-                              className="flex flex-row items-start space-x-3 space-y-0 border-b py-2"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(question.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, question.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== question.id
-                                          )
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm">
-                                  {question.text}
-                                </FormLabel>
-                                <FormDescription>
-                                  {question.difficultyLevel} - {question.options.length} options
-                                </FormDescription>
-                              </div>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <div className="py-2 text-center text-gray-500">
-                      {selectedCourseId
-                        ? "No questions available for this course"
-                        : "Select a course to see available questions"}
-                    </div>
-                  )}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        {useQuestionPool ? (
+          <div className="border rounded-md p-4 space-y-4">
+            <h3 className="text-lg font-medium">Question Pool Configuration</h3>
+            <QuestionPoolConfig 
+              subjects={subjects} 
+              initialPool={questionPool}
+              onPoolChange={setQuestionPool} 
+            />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="questions"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel className="text-base">Questions</FormLabel>
+                    <FormDescription>
+                      Select questions to include in this exam
+                    </FormDescription>
+                  </div>
+                  <div className="space-y-2 max-h-60 overflow-y-auto p-2 border rounded">
+                    {selectedCourseId && filteredQuestions.length > 0 ? (
+                      filteredQuestions.map((question) => (
+                        <FormField
+                          key={question.id}
+                          control={form.control}
+                          name="questions"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={question.id}
+                                className="flex flex-row items-start space-x-3 space-y-0 border-b py-2"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(question.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, question.id])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== question.id
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-sm">
+                                    {question.text}
+                                  </FormLabel>
+                                  <FormDescription>
+                                    {question.difficultyLevel} - {question.options.length} options
+                                  </FormDescription>
+                                </div>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <div className="py-2 text-center text-gray-500">
+                        {selectedCourseId
+                          ? "No questions available for this course"
+                          : "Select a course to see available questions"}
+                      </div>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>

@@ -44,15 +44,15 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [x] Exam scheduling
 - [x] Exam publishing/unpublishing
 
-## Version 2.0 - Core Functionality
+### Phase 6: Exam Taking & Results (Completed)
+- [x] Exam taking interface for candidates
+- [x] Timer functionality
+- [x] Auto-submission when time expires
+- [x] Answer saving and navigation
+- [x] Result calculation and display
+- [x] Result history for candidates
 
-### Phase 6: Exam Taking & Results
-- [ ] Exam taking interface for candidates
-- [ ] Timer functionality
-- [ ] Auto-submission when time expires
-- [ ] Answer saving and navigation
-- [ ] Result calculation and display
-- [ ] Result history for candidates
+## Version 2.0 - Core Functionality
 
 ### Phase 7: Analytics & Reporting
 - [ ] Student performance analytics
@@ -68,14 +68,14 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [ ] Mobile optimizations
 - [ ] Performance enhancements
 
-## Version 3.0 - Advanced Features
-
-### Phase 9: Advanced Exam Features
-- [ ] Question randomization
-- [ ] Question pools
+### Phase 9: Advanced Exam Features (Completed)
+- [x] Question randomization
+- [x] Question pools
 - [ ] Proctoring features
 - [ ] Cheating prevention
 - [ ] Custom exam branding
+
+## Version 3.0 - Advanced Features
 
 ### Phase 10: Integrations
 - [ ] Learning Management System (LMS) integrations

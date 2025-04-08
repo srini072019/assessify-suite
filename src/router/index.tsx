@@ -21,6 +21,8 @@ import SubjectDetail from "@/pages/instructor/SubjectDetail";
 // Candidate pages
 import CandidateDashboard from "@/pages/candidate/Dashboard";
 import CandidateCourses from "@/pages/candidate/Courses";
+import ExamPage from "@/pages/candidate/ExamPage";
+import Exams from "@/pages/candidate/Exams";
 
 const AppRouter = () => {
   const routes = useRoutes([
@@ -77,6 +79,14 @@ const AppRouter = () => {
     {
       path: ROUTES.CANDIDATE_COURSES,
       element: <CandidateCourses />,
+    },
+    {
+      path: "/candidate/exams",
+      element: <Exams />,
+    },
+    {
+      path: "/candidate/exams/:id",
+      element: <ExamPage />,
     },
     
     // Default route - redirect to home or 404
