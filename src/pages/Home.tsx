@@ -1,24 +1,36 @@
-
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, CheckCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/context/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { authState, logout } = useAuth();
   
-  // Dummy logout function - will be replaced with actual authentication
-  const handleLogout = () => {
-    console.log("Logout");
+  const goToDashboard = () => {
+    if (!authState.isAuthenticated || !authState.user) return;
+    
+    switch (authState.user.role) {
+      case "admin":
+        navigate(ROUTES.ADMIN_DASHBOARD);
+        break;
+      case "instructor":
+        navigate(ROUTES.INSTRUCTOR_DASHBOARD);
+        break;
+      case "candidate":
+        navigate(ROUTES.CANDIDATE_DASHBOARD);
+        break;
+    }
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar 
-        isAuthenticated={false} 
-        onLogout={handleLogout}
+        isAuthenticated={authState.isAuthenticated} 
+        onLogout={logout}
       />
       
       <main className="flex-1">
@@ -32,21 +44,34 @@ const Home = () => {
               Create, manage, and conduct online examinations with ease. Perfect for educational institutions and organizations.
             </p>
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-assessify-primary hover:bg-assessify-primary/90 text-white"
-                onClick={() => navigate(ROUTES.REGISTER)}
-              >
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => navigate(ROUTES.LOGIN)}
-              >
-                Log In
-              </Button>
+              {authState.isAuthenticated ? (
+                <Button 
+                  size="lg" 
+                  className="bg-assessify-primary hover:bg-assessify-primary/90 text-white"
+                  onClick={goToDashboard}
+                >
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              ) : (
+                <>
+                  <Button 
+                    size="lg" 
+                    className="bg-assessify-primary hover:bg-assessify-primary/90 text-white"
+                    onClick={() => navigate(ROUTES.REGISTER)}
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => navigate(ROUTES.LOGIN)}
+                  >
+                    Log In
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </section>

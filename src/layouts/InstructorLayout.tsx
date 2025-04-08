@@ -1,24 +1,33 @@
 
 import { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import { useAuth } from "@/context/AuthContext";
+import { ROUTES } from "@/constants/routes";
 
 interface InstructorLayoutProps {
   children: ReactNode;
 }
 
 const InstructorLayout = ({ children }: InstructorLayoutProps) => {
-  // Dummy logout function - will be replaced with actual authentication logic
-  const handleLogout = () => {
-    console.log("Instructor logout");
-  };
+  const { authState, logout } = useAuth();
+  
+  // Protect the route - redirect if not instructor
+  if (authState.isLoading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!authState.isAuthenticated || authState.user?.role !== "instructor") {
+    return <Navigate to={ROUTES.LOGIN} />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar 
         role="instructor" 
         isAuthenticated={true} 
-        onLogout={handleLogout}
+        onLogout={logout}
       />
       <main className="flex-1 py-8">
         <div className="assessify-container">

@@ -1,155 +1,188 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import AuthLayout from "@/layouts/AuthLayout";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ROUTES } from "@/constants/routes";
+import AuthLayout from "@/layouts/AuthLayout";
+import { useAuth } from "@/context/AuthContext";
 import { UserRole } from "@/types/auth.types";
-import { toast } from "sonner";
+
+// Define register form schema
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  confirmPassword: z.string(),
+  role: z.enum(["candidate", "instructor"] as const),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Register = () => {
-  const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("candidate");
-  const [isLoading, setIsLoading] = useState(false);
+  const { register } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock signup handler - will be replaced with Supabase auth
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // Initialize form
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "candidate" as UserRole,
+    },
+  });
 
+  // Handle form submission
+  const onSubmit = async (data: RegisterFormValues) => {
+    setIsSubmitting(true);
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast.success("Registration successful! Please log in.");
-      navigate(ROUTES.LOGIN);
+      await register(data.email, data.password, data.name, data.role);
     } catch (error) {
-      console.error("Signup error:", error);
-      toast.error("Registration failed. Please try again.");
+      console.error("Registration error:", error);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout 
-      title="Create an account" 
-      subtitle="Or sign in to your account"
-    >
-      <form onSubmit={handleSignup} className="space-y-6">
-        <div>
-          <Label htmlFor="name">Full name</Label>
-          <div className="mt-1">
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              required
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-        </div>
+    <AuthLayout title="Create your account" subtitle="Fill in your details to get started with Assessify">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full name</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="John Doe" 
+                    autoComplete="name"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Label htmlFor="email">Email address</Label>
-          <div className="mt-1">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-        </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="you@example.com" 
+                    type="email" 
+                    autoComplete="email"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <div className="mt-1">
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Password must be at least 8 characters
-          </p>
-        </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="••••••••" 
+                    type="password" 
+                    autoComplete="new-password"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Label htmlFor="role">I am a</Label>
-          <Select
-            value={role}
-            onValueChange={(value) => setRole(value as UserRole)}
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="••••••••" 
+                    type="password" 
+                    autoComplete="new-password"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Type</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="candidate">Student / Candidate</SelectItem>
+                    <SelectItem value="instructor">Instructor / Teacher</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isSubmitting}
           >
-            <SelectTrigger id="role" className="mt-1">
-              <SelectValue placeholder="Select role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="candidate">Student / Candidate</SelectItem>
-              <SelectItem value="instructor">Teacher / Instructor</SelectItem>
-              <SelectItem value="admin">Administrator</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Button
-            type="submit"
-            className="w-full bg-assessify-primary hover:bg-assessify-primary/90"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating account..." : "Create account"}
+            {isSubmitting ? "Creating account..." : "Create account"}
           </Button>
-        </div>
 
-        <div className="text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-center text-sm">
             Already have an account?{" "}
-            <Link
-              to={ROUTES.LOGIN}
-              className="font-medium text-assessify-primary hover:text-assessify-primary/90"
+            <Link 
+              to={ROUTES.LOGIN} 
+              className="font-semibold text-primary hover:text-primary/80"
             >
               Sign in
             </Link>
-          </p>
-        </div>
-      </form>
-
-      <div className="mt-6 text-xs text-center text-gray-500 dark:text-gray-400">
-        By signing up, you agree to our{" "}
-        <Link to={ROUTES.TERMS} className="text-assessify-primary hover:underline">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link to="#" className="text-assessify-primary hover:underline">
-          Privacy Policy
-        </Link>
-      </div>
+          </div>
+        </form>
+      </Form>
     </AuthLayout>
   );
 };
