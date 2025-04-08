@@ -16,6 +16,7 @@ import InstructorDashboard from "@/pages/instructor/Dashboard";
 import InstructorCourses from "@/pages/instructor/Courses";
 import CourseDetail from "@/pages/instructor/CourseDetail";
 import InstructorSubjects from "@/pages/instructor/Subjects";
+import SubjectDetail from "@/pages/instructor/SubjectDetail";
 
 // Candidate pages
 import CandidateDashboard from "@/pages/candidate/Dashboard";
@@ -62,6 +63,10 @@ const AppRouter = () => {
     {
       path: ROUTES.INSTRUCTOR_SUBJECTS,
       element: <InstructorSubjects />,
+    },
+    {
+      path: `${ROUTES.INSTRUCTOR_SUBJECTS}/:id`,
+      element: <SubjectDetail />,
     },
     
     // Candidate routes

@@ -30,21 +30,21 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [x] Subject assignment to courses
 - [x] Admin oversight of all courses
 
+### Phase 4: Question Bank (Completed)
+- [x] Question types (MCQ, True/False, Multiple Answer)
+- [x] Question categorization by subject
+- [x] Question difficulty levels
+- [x] Question search and filtering
+- [x] Question CRUD operations
+
+### Phase 5: Exam Creation & Management (Completed)
+- [x] Exam creation interface
+- [x] Exam settings (time limits, shuffling, etc.)
+- [x] Question selection from question bank
+- [x] Exam scheduling
+- [x] Exam publishing/unpublishing
+
 ## Version 2.0 - Core Functionality
-
-### Phase 4: Question Bank
-- [ ] Question types (MCQ, True/False, etc.)
-- [ ] Question categorization by subject
-- [ ] Question difficulty levels
-- [ ] Question import/export functionality
-- [ ] Question search and filtering
-
-### Phase 5: Exam Creation & Management
-- [ ] Exam creation interface
-- [ ] Exam settings (time limits, shuffling, etc.)
-- [ ] Question selection from question bank
-- [ ] Exam scheduling
-- [ ] Exam publishing/unpublishing
 
 ### Phase 6: Exam Taking & Results
 - [ ] Exam taking interface for candidates
@@ -53,8 +53,6 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [ ] Answer saving and navigation
 - [ ] Result calculation and display
 - [ ] Result history for candidates
-
-## Version 3.0 - Advanced Features
 
 ### Phase 7: Analytics & Reporting
 - [ ] Student performance analytics
@@ -70,6 +68,8 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [ ] Mobile optimizations
 - [ ] Performance enhancements
 
+## Version 3.0 - Advanced Features
+
 ### Phase 9: Advanced Exam Features
 - [ ] Question randomization
 - [ ] Question pools
@@ -77,14 +77,14 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [ ] Cheating prevention
 - [ ] Custom exam branding
 
-## Version 4.0 - Enterprise Features
-
 ### Phase 10: Integrations
 - [ ] Learning Management System (LMS) integrations
 - [ ] Single Sign-On (SSO) options
 - [ ] Calendar integrations
 - [ ] Email notifications
 - [ ] API for third-party tools
+
+## Version 4.0 - Enterprise Features
 
 ### Phase 11: Enterprise Management
 - [ ] Multi-institution support

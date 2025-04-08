@@ -1,9 +1,10 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Plus, Trash2 } from "lucide-react";
+import { Edit, Plus, Trash2, FileText } from "lucide-react";
 import { Subject } from "@/types/subject.types";
 import SubjectForm from "./SubjectForm";
 import { useSubjects } from "@/hooks/useSubjects";
@@ -95,6 +96,11 @@ const SubjectList = ({ courseId, courses }: SubjectListProps) => {
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg">{subject.title}</CardTitle>
                   <div className="flex space-x-2">
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link to={`/instructor/subjects/${subject.id}`}>
+                        <FileText size={16} />
+                      </Link>
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEditClick(subject)}>
                       <Edit size={16} />
                     </Button>

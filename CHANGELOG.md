@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Question bank system with multiple question types (MCQ, True/False, Multiple Answer)
+- Question difficulty levels and categorization by subject
+- Question search and filtering capabilities
+- Exam creation and management system
+- Exam settings (time limits, passing score, shuffling)
+- Exam scheduling with start and end dates
+- Exam status workflow (Draft, Published, Archived)
+- Subject detail view with questions management
+- Integrated question selection for exams
+
+### Changed
+- Updated course detail page with tabs for subjects and exams
+- Enhanced subject list with direct navigation to question management
+- Improved router configuration with question and exam routes
+- Refactored code structure for better maintainability
+
+## [0.3.0] - 2025-04-08
+
+### Added
 - Course and Subject management functionality
 - Course creation, editing, and deletion for instructors
 - Subject creation, editing, and deletion for courses
@@ -50,26 +69,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Authentication UI (Login, Register, Forgot Password)
 - Dashboard UI for all three user roles (Admin, Instructor, Candidate)
 - Project documentation in README
-
-## Roadmap
-
-### [0.2.0] - Completed
-- Supabase integration placeholder (to be implemented with real Supabase)
-- Authentication system
-- User management
-- Protected routes
-
-### [0.3.0] - Completed
-- Course management
-- Subject management
-- Enrollment system
-
-### [0.4.0] - Planned
-- Question bank system
-- Exam creation
-- Exam taking interface
-
-### [0.5.0] - Planned
-- Results and analytics
-- Admin reporting tools
-- Mobile optimizations
