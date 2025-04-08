@@ -22,13 +22,13 @@ This document outlines the development plan for the Assessify online MCQ exam pl
 - [x] Demo authentication flow for testing
 - [ ] Supabase integration for authentication (Pending)
 
-### Phase 3: Course & Subject Management
-- [ ] Course CRUD operations
-- [ ] Subject CRUD operations
-- [ ] Course enrollment system
-- [ ] Course listing and filtering
-- [ ] Subject assignment to courses
-- [ ] Admin oversight of all courses
+### Phase 3: Course & Subject Management (Completed)
+- [x] Course CRUD operations
+- [x] Subject CRUD operations
+- [x] Course enrollment system
+- [x] Course listing and filtering
+- [x] Subject assignment to courses
+- [x] Admin oversight of all courses
 
 ## Version 2.0 - Core Functionality
 

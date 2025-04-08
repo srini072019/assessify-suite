@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Course and Subject management functionality
+- Course creation, editing, and deletion for instructors
+- Subject creation, editing, and deletion for courses
+- Course enrollment system for candidates
+- Course listing and filtering for candidates and instructors
+- Course detail view with subject management
+- Dashboard statistics for course management
+
+### Changed
+- Updated layouts to support course navigation
+- Improved router configuration with course and subject routes
+- Enhanced UI components for course and subject display
+- Refactored code structure for better maintainability
+
+## [0.2.0] - 2025-04-08
+
+### Added
 - Authentication system with login, register, and password recovery
 - Role-based access control for Admin, Instructor, and Candidate users
 - Protected routes based on user roles
@@ -42,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User management
 - Protected routes
 
-### [0.3.0] - Planned
+### [0.3.0] - Completed
 - Course management
 - Subject management
 - Enrollment system

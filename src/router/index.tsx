@@ -13,9 +13,13 @@ import AdminDashboard from "@/pages/admin/Dashboard";
 
 // Instructor pages
 import InstructorDashboard from "@/pages/instructor/Dashboard";
+import InstructorCourses from "@/pages/instructor/Courses";
+import CourseDetail from "@/pages/instructor/CourseDetail";
+import InstructorSubjects from "@/pages/instructor/Subjects";
 
 // Candidate pages
 import CandidateDashboard from "@/pages/candidate/Dashboard";
+import CandidateCourses from "@/pages/candidate/Courses";
 
 const AppRouter = () => {
   const routes = useRoutes([
@@ -47,11 +51,27 @@ const AppRouter = () => {
       path: ROUTES.INSTRUCTOR_DASHBOARD,
       element: <InstructorDashboard />,
     },
+    {
+      path: ROUTES.INSTRUCTOR_COURSES,
+      element: <InstructorCourses />,
+    },
+    {
+      path: `${ROUTES.INSTRUCTOR_COURSES}/:id`,
+      element: <CourseDetail />,
+    },
+    {
+      path: ROUTES.INSTRUCTOR_SUBJECTS,
+      element: <InstructorSubjects />,
+    },
     
     // Candidate routes
     {
       path: ROUTES.CANDIDATE_DASHBOARD,
       element: <CandidateDashboard />,
+    },
+    {
+      path: ROUTES.CANDIDATE_COURSES,
+      element: <CandidateCourses />,
     },
     
     // Default route - redirect to home or 404
